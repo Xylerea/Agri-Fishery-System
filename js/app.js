@@ -51,8 +51,9 @@ function createOrder(data, input, id) {
   if (!/^[+()\d\s.-]{6,30}$/.test(contact) || contact.replace(/\D/g, '').length < 6) throw Error('Enter a contact number with at least six digits.');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date) || !Number.isFinite(Date.parse(input.date)) || new Date(input.date).toISOString().slice(0, 10) !== input.date) throw Error('Enter a valid order date.');
   if (!input.lines.length) throw Error('Select at least one product.');
-  const needed = checkStock(data, input.lines);
-  const lines = [...needed].map(([productId, quantity]) => {
+  // Aggregate quantities for stock checks, but retain rows for consistent line rounding.
+  checkStock(data, input.lines);
+  const lines = input.lines.map(({ productId, quantity }) => {
     const product = data.products.find(p => p.id === productId);
     return { productId, name: product.name, price: product.price, quantity };
   });
@@ -231,5 +232,44 @@ if (typeof document !== 'undefined') {
     } catch(error) {message(error.message,true);}
   };
   window.addEventListener('storage', event=>{if(event.key===KEY){try{data=event.newValue?validateData(JSON.parse(event.newValue)):{products:[],orders:[]};blocked=false;render();message('Data updated from another tab.');}catch(error){blocked=true;message('Another tab saved invalid data. Changes are blocked.',true);}}});
+  const tabNames = ['products', 'orders', 'reports'];
+  function tabForHash(hash) {
+    const target = hash.replace(/^#/, '');
+    if (['orders', 'new-order', 'order-detail'].includes(target)) return 'orders';
+    if (['reports', 'overview'].includes(target)) return 'reports';
+    return 'products';
+  }
+  function showTab(name) {
+    for (const tab of tabNames) {
+      const active = tab === name;
+      $('panel-' + tab).hidden = !active;
+      $('tab-' + tab).setAttribute('aria-selected', String(active));
+      $('tab-' + tab).tabIndex = active ? 0 : -1;
+    }
+  }
+  function selectTab(name) {
+    showTab(name);
+    if (window.location.hash !== '#' + name) window.location.hash = name;
+  }
+  for (const name of tabNames) {
+    $('tab-' + name).addEventListener('click', () => selectTab(name));
+    $('tab-' + name).addEventListener('keydown', event => {
+      let index = tabNames.indexOf(name);
+      if (['ArrowLeft', 'ArrowUp'].includes(event.key)) index = (index + tabNames.length - 1) % tabNames.length;
+      else if (['ArrowRight', 'ArrowDown'].includes(event.key)) index = (index + 1) % tabNames.length;
+      else if (event.key === 'Home') index = 0;
+      else if (event.key === 'End') index = tabNames.length - 1;
+      else return;
+      event.preventDefault();
+      selectTab(tabNames[index]);
+      $('tab-' + tabNames[index]).focus();
+    });
+  }
+  document.addEventListener('click', event => {
+    const link = event.target.closest('a[href^="#"]');
+    if (link) showTab(tabForHash(link.getAttribute('href')));
+  });
+  window.addEventListener('hashchange', () => showTab(tabForHash(window.location.hash)));
+  showTab(tabForHash(window.location.hash));
   addLine();render();
 }

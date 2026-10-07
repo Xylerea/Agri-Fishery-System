@@ -6,3 +6,71 @@
 
 /* Keep selected product names readable in order rows. */
 .order-line{align-items:start}.order-line>label{min-width:0}.line-product{width:100%}.selected-product{display:block;overflow-wrap:anywhere;font-size:11px;color:var(--primary);line-height:1.5}.order-line>.remove-line{margin-top:22px}
+
+/* Workspace tabs */
+[hidden]{display:none!important}.tab-nav button{display:flex;align-items:center;gap:13px;text-align:left;width:100%;padding:14px 12px;border:0;border-radius:8px;background:transparent;color:var(--muted)}.tab-nav button:hover{background:#fff0f2;color:var(--primary)}.tab-nav button[aria-selected="true"]{background:#fce9ec;color:var(--primary);font-weight:700;box-shadow:inset 3px 0 var(--primary)}[role="tabpanel"]{min-height:70vh}[role="tabpanel"]:focus-visible{outline:2px solid var(--primary);outline-offset:4px}@media(max-width:760px){.tab-nav button{width:auto;white-space:nowrap}.tab-nav{gap:8px}}
+
+/* Product table header */
+#products table thead th{background:var(--primary);color:#fff}
+
+/* Matching red product controls, filters, and entry forms. */
+#add-product,
+#orders .section-heading > .button{
+  background:var(--primary);
+  border-color:var(--primary);
+  color:#fff;
+}
+#orders .toolbar.filters,
+#product-form,
+#order-editor{
+  background:var(--primary);
+  border-color:var(--primary);
+  color:#fff;
+}
+#orders .toolbar.filters label,
+#product-form .form-grid label,
+#order-editor .form-grid label,
+#order-editor .order-line label,
+#product-form .helper,
+#order-editor .helper,
+#order-editor .selected-product{
+  color:#fff;
+}
+#orders .toolbar.filters input,
+#orders .toolbar.filters select,
+#product-form input:not([type="hidden"]),
+#product-form select,
+#order-editor input,
+#order-editor select{
+  background:#fff;
+  border-color:#e8cdd3;
+  color:var(--ink);
+}
+#orders .toolbar.filters input::placeholder,
+#product-form input::placeholder,
+#order-editor input::placeholder{
+  color:#806f73;
+  opacity:1;
+}
+#clear-filters,
+#product-form .button.secondary,
+#order-editor .button.secondary{
+  background:#fff;
+  border-color:#fff;
+  color:var(--primary);
+}
+#product-form .button.primary,
+#order-editor .button.primary{
+  background:#781525;
+  border-color:#f4b4bf;
+  color:#fff;
+}
+#order-editor .total{border-color:#ffffff66}
+#product-form :focus-visible,
+#order-editor :focus-visible,
+#orders .toolbar.filters :focus-visible{
+  outline:2px solid #ffe1a6;
+  outline-offset:3px;
+}
+#add-product:hover,
+#orders .section-heading > .button:hover{background:#911c2d}

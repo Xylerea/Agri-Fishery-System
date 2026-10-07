@@ -117,7 +117,23 @@ Added Rice, Tomato, Eggplant, Tilapia, Milkfish, and Shrimp as a one-time starte
 
 Verified six starter products, three LOW STOCK items, no duplicates on repeated initialization, preservation of existing stock/prices, no resurrection after deletion, valid stored data, peso formatting, and removal of CU from HTML/JavaScript.
 
-## Entry 8 — Revert Latest Layout Changes
+## Entry 8 — Header, Dropdown Navigation, Hero, and Slider
+
+**Date:** October 7, 2026
+
+### User Request
+
+Add a header, dropdown navigation, a hero image, and a left-side carousel or slider below the fold.
+
+### Result
+
+Added a responsive header with a Manage dropdown, an SVG farm-and-fishery hero, and a left-side carousel showing inventory names, peso prices, available stock, and low-stock indicators. Included previous/next buttons, slide indicators, and arrow-key navigation. This layout was subsequently reverted at the user's request; the current system does not include it.
+
+### Validation
+
+Checked JavaScript syntax, section anchors, product display, carousel wrapping, and empty inventory handling. Visual browser review was not performed.
+
+## Entry 9 — Revert Latest Layout Changes
 
 **Date:** October 7, 2026
 
@@ -128,3 +144,99 @@ Remove only the latest header, hero, dropdown, and slider changes (option 1).
 ### Result
 
 Restored the previous sidebar and workspace layout. Preserved the red theme, starter products, Philippine peso formatting, product-selection fixes, and all system functionality. Removed the added carousel and dropdown logic and layout styles. JavaScript syntax, element references, and navigation anchors were checked.
+
+## Entry 10 — Product Deletion Review
+
+**Date:** October 7, 2026
+
+### User Request
+
+Check product deletion. Prevent deletion of products referenced by any order, including Cancelled orders, using product IDs and a clear error. Leave the code unchanged if it already works.
+
+### Result
+
+The existing deletion function and click handler already check every order line by product ID without excluding any status. Referenced products show: “This product is used in an order and cannot be deleted.” No files were changed during this review.
+
+### Validation
+
+Verified protection for Pending, Confirmed, Delivered, and Cancelled orders. Checked that blocked deletion leaves data unchanged, the Cancelled-order handler shows an error without saving, and an unreferenced product with the same name can still be deleted.
+
+## Entry 11 — Order and Validation Bug Review
+
+**Date:** October 7, 2026
+
+### User Request
+
+Review order totals, status transitions, stock deduction, cancellation restoration, and input validation. Fix confirmed bugs without unnecessary changes.
+
+### Finding and Fix
+
+Repeated product rows were merged when saving, which could change the total because the form rounded each row individually. For example, two 0.01 kg rows at ₱0.50/kg displayed ₱0.02 but saved as ₱0.01. Order creation now retains individual rows and original price snapshots. Stock checks still aggregate quantities by product ID, so repeated rows cannot exceed stock. Existing saved orders are unchanged.
+
+### Validation
+
+Passed duplicate-row totals, all 16 status-transition pairs, exact-stock boundary, combined duplicate stock limits, confirmation rechecks with unchanged data on failure, one-time deduction/restoration, Pending cancellation and delivery stock behavior, fractional totals, price snapshots, Delivered reports, Cancelled-order deletion protection, numeric/date/contact/required-input validation, JSON round trip, and JavaScript syntax checks. No additional confirmed bugs were found in the tested rules.
+
+## Entry 12 — Interface Wording Cleanup
+
+**Date:** October 7, 2026
+
+### User Request
+
+Remove unnecessary wording, including the workspace breadcrumb and browser-storage/currency banner.
+
+### Result
+
+Removed the workspace header labels, redundant storage/currency footer note, and assignment footer label. Shortened the product deletion note while preserving useful labels, validation messages, and business-rule guidance. No functionality changed.
+
+## Entry 13 — Products, Orders, and Reports Tabs
+
+**Date:** October 7, 2026
+
+### User Request
+
+Replace the long scrolling page with Products, Orders, and Reports tabs. Show only selected content, highlight the active tab, and keep order details in Orders.
+
+### Result
+
+Grouped content into three accessible tab panels with active red navigation styling. Products contains inventory and editing; Orders contains the list, creation form, and details; Reports contains the overview and sales reports. Hash navigation opens the appropriate tab for direct links and browser history. Added arrow-key/Home/End tab navigation. Existing data and business logic are unchanged.
+
+### Validation
+
+Verified exactly one visible panel and selected navigation button per tab, keyboard focus state, detail/create-order hash routing, unique IDs, existing control references, and JavaScript syntax.
+
+## Entry 14 — Red Product Table Header
+
+**Date:** October 7, 2026
+
+### User Request
+
+Give the entire product table header row a red background with white text, including Product, Category, Price / kg, Available stock, Stock status, and Actions. Keep the table body and functionality unchanged.
+
+### Result
+
+Added a CSS rule scoped to the product table header cells. All six column headers use the theme's red background and white text. The table body, HTML, and JavaScript were unchanged.
+
+## Entry 15 — Red Controls, Filters, and Forms
+
+**Date:** October 7, 2026
+
+### User Request
+
+Apply red backgrounds to the product table header, Add Product, order filters, and product/order entry forms with readable contrasting text and visible inputs. Preserve layout and functionality.
+
+### Result
+
+Preserved the red product table header and added matching red backgrounds to Add Product, Create order, the Buyer/Status/Date filter bar, the product editor, and the order creation form. Used white labels and input surfaces, contrasting Clear/secondary buttons, darker red submit buttons, and visible focus outlines. HTML and JavaScript were verified unchanged.
+
+## Entry 16 — Prompt Log Update
+
+**Date:** October 7, 2026
+
+### User Prompt
+
+> update prompt log
+
+### Result
+
+Added the missing layout creation, product deletion review, and product table header requests in chronological order. Renumbered entries and preserved the recorded results and validation limits. Only this documentation file was updated.
