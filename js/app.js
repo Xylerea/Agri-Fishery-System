@@ -1,6 +1,25 @@
 'use strict';
 // Values are stored as integer hundredths (cents and hundredths of a kilogram).
 const KEY = 'harvest-tide-v1';
+const STARTER_PRODUCTS = [
+  { id: 'starter-rice', name: 'Rice', category: 'Crop', price: 5500, stock: 10000 },
+  { id: 'starter-tomato', name: 'Tomato', category: 'Crop', price: 6000, stock: 2500 },
+  { id: 'starter-eggplant', name: 'Eggplant', category: 'Crop', price: 8000, stock: 1500 },
+  { id: 'starter-tilapia', name: 'Tilapia', category: 'Fishery', price: 14000, stock: 1800 },
+  { id: 'starter-milkfish', name: 'Milkfish', category: 'Fishery', price: 18000, stock: 3500 },
+  { id: 'starter-shrimp', name: 'Shrimp', category: 'Fishery', price: 32000, stock: 1200 }
+];
+function addStarterProducts(data) {
+  if (data.starterProductsAdded) return false;
+  for (const product of STARTER_PRODUCTS) {
+    const exists = data.products.some(existing => existing.id === product.id ||
+      (existing.name.trim().toLowerCase() === product.name.toLowerCase() && existing.category === product.category));
+    if (!exists) data.products.push({ ...product });
+  }
+  data.starterProductsAdded = true;
+  return true;
+}
+
 const STATUSES = ['Pending', 'Confirmed', 'Delivered', 'Cancelled'];
 const round = value => Math.round(value);
 const totalCents = order => order.lines.reduce((sum, line) => sum + round(line.quantity * line.price / 100), 0);
@@ -87,13 +106,18 @@ function validateData(data) {
 if (typeof document !== 'undefined') {
   const $ = id => document.getElementById(id);
   const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const money = cents => (cents / 100).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) + ' CU';
+  const money = cents => '₱' + (cents / 100).toLocaleString('en-PH', {minimumFractionDigits:2, maximumFractionDigits:2});
   const kg = value => (value / 100).toLocaleString(undefined, {maximumFractionDigits:2});
   const badge = status => '<span class="badge ' + ({Pending:'pending',Confirmed:'confirmed',Delivered:'healthy',Cancelled:'cancelled'}[status]) + '">' + status + '</span>';
   const uid = prefix => prefix + '-' + (globalThis.crypto?.randomUUID?.() || Date.now().toString(36) + Math.random().toString(36).slice(2));
   let data = {products: [], orders: []}, selected = null, blocked = false;
   function message(text, error = false) { $('message').hidden = false; $('message').className = error ? 'feedback error' : 'feedback success'; $('message').textContent = text; }
-  try { const saved = localStorage.getItem(KEY); if (saved) data = validateData(JSON.parse(saved)); }
+  try {
+    const saved = localStorage.getItem(KEY);
+    const loaded = saved ? validateData(JSON.parse(saved)) : { products: [], orders: [] };
+    if (addStarterProducts(loaded)) localStorage.setItem(KEY, JSON.stringify(loaded));
+    data = loaded;
+  }
   catch (error) { blocked = true; message('Stored data could not be loaded. Changes are blocked to protect existing data. ' + error.message, true); }
   function commit(change, success) {
     try {
@@ -126,27 +150,46 @@ if (typeof document !== 'undefined') {
     $('stock-notice').innerHTML = '<span class="notice-icon">!</span><div><strong>' + (low.length ? 'Review low-stock products' : 'Inventory overview') + '</strong><p>' + (low.length ? low.map(p=>escape(p.name)+' ('+kg(p.stock)+' kg)').join(', ') : data.products.length ? 'All products have at least 20 kg available.' : 'Add products to begin tracking your inventory.') + '</p></div><a href="#products">View inventory →</a>';
     $('report-content').innerHTML = '<article class="panel padded sales-report"><span class="eyebrow">DELIVERED SALES</span><strong class="report-number">'+money(r.sales)+'</strong><p class="muted">'+r.counts.Delivered+' delivered orders · '+kg(r.kilograms)+' kg sold</p></article><article class="panel padded"><h3>Orders by status</h3>'+STATUSES.map(s=>'<div class="status-row"><span>'+badge(s)+'</span><strong>'+r.counts[s]+'</strong></div>').join('')+'</article><article class="panel padded top-product"><span class="eyebrow">MOST KILOGRAMS SOLD</span><h3>'+ (r.top.length ? r.top.map(p=>escape(p.name)).join(' · ') : 'No delivered sales yet') +'</h3><strong class="report-number">'+(r.top.length ? kg(r.top[0].quantity)+' kg' : '—')+'</strong><p class="muted">'+(r.top.length>1?'Tied for most kilograms sold':'From Delivered orders')+'</p></article>';
   }
+  function populateProductOptions(select) {
+    const previous = select.value;
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = data.products.length ? 'Select product' : 'Add inventory products first';
+    const options = data.products.map(product => {
+      const option = document.createElement('option');
+      option.value = product.id;
+      option.textContent = product.name + ' · ' + kg(product.stock) + ' kg available';
+      return option;
+    });
+    select.replaceChildren(placeholder, ...options);
+    select.value = data.products.some(product => product.id === previous) ? previous : '';
+  }
   function updateOptions() {
-    for (const select of document.querySelectorAll('.line-product')) {
-      const previous = select.value;
-      select.innerHTML = '<option value="">Select product</option>' + data.products.map(p=>'<option value="'+escape(p.id)+'">'+escape(p.name)+' · '+kg(p.stock)+' kg · '+money(p.price)+'/kg</option>').join('');
-      select.value = previous;
-    }
+    document.querySelectorAll('.line-product').forEach(populateProductOptions);
   }
   function updateDraft() {
     let total = 0;
     for (const row of document.querySelectorAll('.order-line')) {
-      const p = data.products.find(p=>p.id===row.querySelector('select').value);
-      const quantity = Number(row.querySelector('input').value);
-      const cents = p && Number.isFinite(quantity) && quantity>0 ? round(round(quantity*100)*p.price/100) : 0;
-      row.querySelector('output').textContent = money(cents); total += cents;
+      const product = data.products.find(product => product.id === row.querySelector('.line-product').value);
+      const quantity = Number(row.querySelector('.line-quantity').value);
+      const cents = product && Number.isFinite(quantity) && quantity > 0
+        ? round(round(quantity * 100) * product.price / 100) : 0;
+      row.querySelector('output').textContent = money(cents);
+      row.querySelector('.selected-product').textContent = product
+        ? product.name + ' · ' + money(product.price) + '/kg · ' + kg(product.stock) + ' kg available'
+        : 'Choose a product for this row.';
+      total += cents;
     }
     $('draft-total').textContent = money(total);
   }
   function addLine() {
-    const row = document.createElement('div'); row.className = 'order-line';
-    row.innerHTML = '<label>Product<select class="line-product" required></select></label><label>Quantity (kg)<input type="number" min="0.01" max="1000000" step="0.01" required></label><label>Line total<output>0.00 CU</output></label><button type="button" class="button secondary remove-line">Remove</button>';
-    $('order-lines').append(row); updateOptions(); updateDraft();
+    const row = document.createElement('div');
+    row.className = 'order-line';
+    row.innerHTML = '<label class="product-choice">Product<select class="line-product" required></select><span class="selected-product" aria-live="polite">Choose a product for this row.</span></label><label>Quantity (kg)<input class="line-quantity" type="number" min="0.01" max="1000000" step="0.01" required></label><label>Line total<output>₱0.00</output></label><button type="button" class="button secondary remove-line">Remove</button>';
+    populateProductOptions(row.querySelector('.line-product'));
+    $('order-lines').append(row);
+    updateDraft();
+    return row;
   }
   function render() { renderProducts(); renderOrders(); renderDetail(); renderSummary(); updateOptions(); updateDraft(); }
   function resetProduct() { $('product-editor').reset(); $('product-id').value = ''; }
@@ -170,7 +213,10 @@ if (typeof document !== 'undefined') {
   $('clear-filters').onclick=()=>{for(const id of ['buyer-filter','status-filter','date-filter']) $(id).value='';renderOrders();};
   $('order-rows').onclick=event=>{const button=event.target.closest('[data-view]');if(button){selected=button.dataset.view;renderDetail();$('order-detail').scrollIntoView();}};
   $('detail-content').onclick=event=>{const button=event.target.closest('[data-status]');if(button){if(button.dataset.status==='Cancelled'&&!confirm('Cancel this order? Confirmed stock will be restored.'))return;commit(next=>transition(next,selected,button.dataset.status),'Order '+button.dataset.status.toLowerCase()+'.');}};
-  $('add-line').onclick=addLine;
+  $('add-line').onclick = () => {
+    const row = addLine();
+    row.querySelector('.line-product').focus();
+  };
   $('order-lines').addEventListener('input',updateDraft);
   $('order-lines').addEventListener('change',updateDraft);
   $('order-lines').onclick=event=>{if(event.target.closest('.remove-line')){if($('order-lines').children.length===1){message('An order needs at least one product line.',true);return;}event.target.closest('.order-line').remove();updateDraft();}};

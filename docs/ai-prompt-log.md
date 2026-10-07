@@ -84,3 +84,35 @@ Implemented product add/edit/delete with order-reference protection; multi-produ
 ### Validation
 
 Passed business-rule tests and DOM-harness integration checks for data entry, status changes, filters, reports, persistence/reload, escaped text, storage-failure rollback, and element references. A real-browser visual test was not run because browser-testing dependencies were unavailable.
+
+## Entry 6 — Order Product Selection Fix
+
+**Date:** October 7, 2026
+
+### User Request
+
+Fix Add Product so it creates a selectable order row, and ensure selected products are visible.
+
+### Result
+
+Changed order Add Product to append and focus a new row without rebuilding earlier dropdowns. Added explicit product-name, price, and available-stock details beneath each selection. Preserved selections when inventory options refresh and adjusted row sizing for readable dropdowns. Product catalog Add product continues to open the inventory editor.
+
+### Validation
+
+A focused selection test harness verified multiple row creation, preservation of earlier selections, visible chosen-product names, updated inventory names, line totals, and combined totals. JavaScript syntax validation passed.
+
+## Entry 7 — Starter Products and Philippine Peso
+
+**Date:** October 7, 2026
+
+### User Request
+
+Add products with categories, prices, available stock, stock status, and actions. Replace CU currency units with the peso sign.
+
+### Result
+
+Added Rice, Tomato, Eggplant, Tilapia, Milkfish, and Shrimp as a one-time starter inventory. Existing products with matching names/categories are preserved; deleted starter products do not reappear after refresh. Products display category, peso price per kilogram, available kilograms, stock status, and working Edit/Delete actions. Replaced all application CU displays with Philippine pesos (₱), including forms, order lines, totals, and sales reports.
+
+### Validation
+
+Verified six starter products, three LOW STOCK items, no duplicates on repeated initialization, preservation of existing stock/prices, no resurrection after deletion, valid stored data, peso formatting, and removal of CU from HTML/JavaScript.

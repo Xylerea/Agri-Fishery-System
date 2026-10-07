@@ -6,7 +6,7 @@ IT415 Midterm — Scenario 3: Agri-Fishery Cooperative Order and Inventory Syste
 
 ## Current Scope
 
-A responsive red interface with working product management, order creation and details, status transitions, stock adjustments, filters, reports, and localStorage persistence. The application starts with empty data on first use.
+A responsive red interface with working product management, order creation and details, status transitions, stock adjustments, filters, reports, and localStorage persistence. The application adds six starter products once, preserving existing products and orders.
 
 ## 1. Problem
 
@@ -102,7 +102,7 @@ Available stock must be checked during order creation and checked again before c
 
 ## 9. Details to Resolve Before Implementation
 
-Implementation choices: currency is displayed as CU (currency units) until a currency is specified. Prices and quantities support two decimals; each line total is rounded to two currency decimals before totals are summed. Contact numbers allow digits, spaces, +, parentheses, dots, and hyphens, with at least six digits. Orders retain original product names and prices after product edits. All products tied for most kilograms sold are displayed. Editing stock sets current available stock. Pending orders do not reserve stock; confirmation checks availability again. Delivered and Cancelled orders are final.
+Implementation choices: currency is displayed in Philippine pesos (₱). Prices and quantities support two decimals; each line total is rounded to two currency decimals before totals are summed. Contact numbers allow digits, spaces, +, parentheses, dots, and hyphens, with at least six digits. Orders retain original product names and prices after product edits. All products tied for most kilograms sold are displayed. Editing stock sets current available stock. Pending orders do not reserve stock; confirmation checks availability again. Delivered and Cancelled orders are final.
 
 ## 10. Verification
 
