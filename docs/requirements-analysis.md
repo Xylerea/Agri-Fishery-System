@@ -6,7 +6,7 @@ IT415 Midterm — Scenario 3: Agri-Fishery Cooperative Order and Inventory Syste
 
 ## Current Scope
 
-Requirements documentation and a responsive interface design with illustrative sample data. Core functionality, live calculations, stock adjustments, filtering, and localStorage persistence have not been implemented.
+A responsive red interface with working product management, order creation and details, status transitions, stock adjustments, filters, reports, and localStorage persistence. The application starts with empty data on first use.
 
 ## 1. Problem
 
@@ -102,4 +102,8 @@ Available stock must be checked during order creation and checked again before c
 
 ## 9. Details to Resolve Before Implementation
 
-The provided requirements do not specify currency and rounding rules, contact-number format, permitted quantity precision, whether existing orders keep their original prices after product edits, or how to display ties for the top-selling product. These details remain open.
+Implementation choices: currency is displayed as CU (currency units) until a currency is specified. Prices and quantities support two decimals; each line total is rounded to two currency decimals before totals are summed. Contact numbers allow digits, spaces, +, parentheses, dots, and hyphens, with at least six digits. Orders retain original product names and prices after product edits. All products tied for most kilograms sold are displayed. Editing stock sets current available stock. Pending orders do not reserve stock; confirmation checks availability again. Delivered and Cancelled orders are final.
+
+## 10. Verification
+
+Business-rule tests covered duplicate-line aggregation, totals, stock checks at creation and confirmation, all status transitions, one-time deductions and restoration, product deletion protection, Delivered-only reports, numeric precision, date and contact validation, price snapshots, and JSON serialization. A DOM test harness verified product and order submission, safe text rendering, category and buyer filtering, status actions, reports, localStorage save and reload, and storage-failure rollback. HTML IDs and JavaScript element references were checked. These checks do not replace a visual browser review.
