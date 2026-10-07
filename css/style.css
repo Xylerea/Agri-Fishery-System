@@ -74,3 +74,29 @@
 }
 #add-product:hover,
 #orders .section-heading > .button:hover{background:#911c2d}
+
+/* Larger, easier-to-read interface text. */
+body{font-size:16px}
+.brand{font-size:20px}
+.brand small,.nav-label,.eyebrow{font-size:12px}
+.tab-nav button{font-size:16px}
+.sidebar-note,.profile{font-size:14px}
+.profile small{font-size:13px}
+h1{font-size:36px}
+h2{font-size:27px}
+h3{font-size:20px}
+table{font-size:15px}
+th{font-size:14px}
+td button{font-size:14px}
+.badge,.count{font-size:12px}
+.button{font-size:15px}
+.toolbar label,.form-grid label,.order-line label{font-size:14px}
+input,select{font-size:16px}
+.helper,.selected-product,.form-note,.buyer-details p{font-size:14px}
+.stat>span,.stat p,.stat strong small{font-size:14px}
+.notice,.total,.status-row,.period,.top-product p,.sales-report p{font-size:14px}
+.top-product>small,footer{font-size:13px}
+@media(max-width:760px){h1{font-size:30px}h2{font-size:25px}.eyebrow{font-size:11px}.button{font-size:14px}.tab-nav button{font-size:15px}}
+
+/* Keep the staff profile at the bottom of the sidebar. */
+.profile{margin-top:auto;flex-direction:row;align-items:center;text-align:left;gap:11px}
