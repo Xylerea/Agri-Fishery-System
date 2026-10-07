@@ -116,3 +116,15 @@ Added Rice, Tomato, Eggplant, Tilapia, Milkfish, and Shrimp as a one-time starte
 ### Validation
 
 Verified six starter products, three LOW STOCK items, no duplicates on repeated initialization, preservation of existing stock/prices, no resurrection after deletion, valid stored data, peso formatting, and removal of CU from HTML/JavaScript.
+
+## Entry 8 — Revert Latest Layout Changes
+
+**Date:** October 7, 2026
+
+### User Request
+
+Remove only the latest header, hero, dropdown, and slider changes (option 1).
+
+### Result
+
+Restored the previous sidebar and workspace layout. Preserved the red theme, starter products, Philippine peso formatting, product-selection fixes, and all system functionality. Removed the added carousel and dropdown logic and layout styles. JavaScript syntax, element references, and navigation anchors were checked.
